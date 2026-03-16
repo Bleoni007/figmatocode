@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nettxio · Design to Code</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #07070d;
+    --surface: #0f0f18;
+    --surface2: #16161f;
+    --border: #252535;
+    --accent: #6c5fff;
+    --accent-glow: rgba(108,95,255,0.18);
+    --accent2: #00d4b4;
+    --text: #eaeaf5;
+    --muted: #5e5e78;
+    --success: #3ddc84;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle, #252535 1px, transparent 1px);
+    background-size: 28px 28px;
+    opacity: 0.45;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    top: -260px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 900px;
+    height: 500px;
+    background: radial-gradient(ellipse, rgba(108,95,255,0.12) 0%, transparent 68%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ── Topbar ── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 0 18px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .topbar-logo {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: var(--text);
+  }
+
+  .topbar-logo span { color: var(--accent); }
+
+  .topbar-badge {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 5px 13px 5px 9px;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    font-family: var(--mono);
+  }
+
+  .live-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent2);
+    box-shadow: 0 0 7px var(--accent2);
+    animation: blink 2.4s infinite;
+  }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* ── Header ── */
+  header {
+    padding: 56px 0 48px;
+    text-align: center;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--accent2);
+    font-family: var(--mono);
+    margin-bottom: 22px;
+  }
+
+  .eyebrow::before, .eyebrow::after {
+    content: '';
+    width: 28px;
+    height: 1px;
+    background: var(--accent2);
+    opacity: 0.5;
+  }
+
+  h1 {
+    font-size: clamp(38px, 6.5vw, 68px);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.04;
+    margin-bottom: 20px;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--accent);
+    position: relative;
+  }
+
+  h1 em::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    opacity: 0.5;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    max-width: 400px;
+    margin: 0 auto;
+    line-height: 1.7;
+    font-family: var(--mono);
+  }
+
+  /* ── Card ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 32px;
+    margin-bottom: 20px;
+    transition: border-color 0.25s;
+  }
+
+  .card:hover { border-color: #323248; }
+
+  .section-label {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--muted);
+    margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── Drop Zone ── */
+  .drop-zone {
+    border: 2px dashed var(--border);
+    border-radius: 14px;
+    padding: 52px 32px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+    background: var(--surface2);
+  }
+
+  .drop-zone:hover, .drop-zone.dragover {
+    border-color: var(--accent);
+    background: rgba(108,95,255,0.06);
+  }
+
+  .drop-zone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  .drop-icon-wrap {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 18px;
+  }
+
+  .drop-icon {
+    width: 56px; height: 56px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    position: relative;
+    z-index: 1;
+  }
+
+  .drop-icon-glow {
+    position: absolute;
+    inset: -8px;
+    border-radius: 20px;
+    background: var(--accent-glow);
+    filter: blur(8px);
+    z-index: 0;
+  }
+
+  .drop-title { font-size: 16px; font-weight: 700; margin-bottom: 7px; }
+  .drop-sub { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+
+  /* Image preview */
+  #image-preview {
+    margin-top: 18px;
+    display: none;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    position: relative;
+    background: #000;
+  }
+
+  #image-preview img {
+    width: 100%;
+    max-height: 320px;
+    object-fit: contain;
+    display: block;
+  }
+
+  .preview-tag {
+    position: absolute;
+    bottom: 10px; right: 10px;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(6px);
+    border-radius: 6px;
+    padding: 4px 11px;
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--success);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .preview-change {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(6px);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 11px;
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--muted);
+    cursor: pointer;
+    transition: color 0.15s;
+  }
+
+  .preview-change:hover { color: var(--text); }
+
+  /* Tip */
+  .tip-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 18px;
+    background: rgba(0,212,180,0.06);
+    border: 1px solid rgba(0,212,180,0.18);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: var(--mono);
+    line-height: 1.6;
+  }
+
+  .tip-icon { color: var(--accent2); flex-shrink: 0; margin-top: 1px; }
+
+  /* Error */
+  .error-box {
+    display: none;
+    background: rgba(255,80,80,0.08);
+    border: 1px solid rgba(255,80,80,0.25);
+    border-radius: 10px;
+    padding: 13px 18px;
+    margin-top: 16px;
+    font-size: 13px;
+    color: #ff8080;
+    font-family: var(--mono);
+  }
+
+  .error-box.visible { display: block; }
+
+  /* Generate button */
+  .btn-generate {
+    width: 100%;
+    padding: 17px;
+    background: var(--accent);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s;
+    letter-spacing: 0.01em;
+    margin-top: 22px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-generate::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.12), transparent 60%);
+  }
+
+  .btn-generate:hover:not(:disabled) {
+    background: #7d70ff;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 30px rgba(108,95,255,0.4);
+  }
+
+  .btn-generate:active:not(:disabled) { transform: translateY(0); }
+  .btn-generate:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  /* Loading */
+  .loading-card {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 44px 32px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .loading-card.visible { display: block; }
+
+  .rings {
+    position: relative;
+    width: 60px; height: 60px;
+    margin: 0 auto 22px;
+  }
+
+  .ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid transparent;
+  }
+
+  .ring-1 { inset: 0; border-top-color: var(--accent); animation: spin 0.9s linear infinite; }
+  .ring-2 { inset: 9px; border-top-color: var(--accent2); animation: spin 1.3s linear infinite reverse; }
+  .ring-3 { inset: 18px; border-top-color: rgba(108,95,255,0.4); animation: spin 1.8s linear infinite; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-title { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+  .loading-status { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+
+  /* Result */
+  .result-card {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .result-card.visible { display: block; animation: fadeUp 0.3s ease; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-header {
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface2);
+  }
+
+  .result-title {
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .result-badge {
+    background: rgba(61,220,132,0.12);
+    color: var(--success);
+    border: 1px solid rgba(61,220,132,0.25);
+    border-radius: 999px;
+    padding: 2px 11px;
+    font-size: 10.5px;
+    font-family: var(--mono);
+  }
+
+  .result-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+  .btn-sm {
+    padding: 7px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s;
+  }
+
+  .btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-sm.primary { background: var(--accent); border-color: var(--accent); color: white; }
+  .btn-sm.primary:hover { background: #7d70ff; color: white; }
+
+  /* View toggle pill */
+  .view-toggle {
+    display: flex;
+    gap: 2px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 3px;
+    margin-right: 4px;
+  }
+
+  .view-btn {
+    padding: 5px 11px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .view-btn.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+  .view-btn:hover:not(.active) { color: var(--text); }
+
+  pre {
+    padding: 24px;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.75;
+    color: #b8b8d8;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  /* Code view */
+  #view-code .code-output { max-height: 560px; overflow-y: auto; }
+  #view-code .code-output::-webkit-scrollbar { width: 5px; }
+  #view-code .code-output::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* Preview */
+  .preview-frame-full { width: 100%; height: 560px; border: none; display: block; background: white; }
+
+  .hidden { display: none !important; }
+
+  /* Footer */
+  footer {
+    padding: 32px 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid var(--border);
+    margin-top: 8px;
+  }
+
+  .footer-left {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+
+  .footer-left strong { color: var(--text); }
+
+  .footer-right {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: var(--mono);
+    text-align: right;
+    line-height: 1.7;
+  }
+
+  .footer-right .by { color: var(--accent); font-weight: 500; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="topbar">
+    <div class="topbar-logo">Nettx<span>io</span></div>
+    <div class="topbar-badge">
+      <div class="live-dot"></div>
+      Internal Tool
+    </div>
+  </div>
+
+  <header>
+    <div class="eyebrow">Design to Code</div>
+    <h1>FIGMA <em>→</em> CODE</h1>
+    <p class="subtitle">Export your Figma screen as an image, drop or paste it here, and get production-ready HTML &amp; CSS instantly.</p>
+  </header>
+
+  <div class="card" id="input-card">
+    <div class="section-label">Upload Design</div>
+
+    <div class="drop-zone" id="drop-zone">
+      <input type="file" accept="image/*" id="file-input" />
+      <div class="drop-icon-wrap">
+        <div class="drop-icon-glow"></div>
+        <div class="drop-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
+      </div>
+      <div class="drop-title">Drop, paste, or click to upload</div>
+      <div class="drop-sub">PNG · JPG · WebP · Ctrl+V to paste</div>
+    </div>
+
+    <div id="image-preview">
+      <img id="preview-img" src="" alt="Design preview" />
+      <div class="preview-tag">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        Ready to generate
+      </div>
+      <div class="preview-change" onclick="resetImage()">Change</div>
+    </div>
+
+    <div class="tip-row">
+      <svg class="tip-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      In Figma: select your frame → right-click → <strong>&nbsp;Copy/Paste as → Copy as PNG&nbsp;</strong>, then press <strong>&nbsp;Ctrl+V&nbsp;</strong> anywhere on this page to paste.
+    </div>
+
+    <div class="error-box" id="error-box"></div>
+
+    <button class="btn-generate" id="generate-btn" onclick="generate()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      Generate HTML &amp; CSS
+    </button>
+  </div>
+
+  <div class="loading-card" id="loading-card">
+    <div class="rings">
+      <div class="ring ring-1"></div>
+      <div class="ring ring-2"></div>
+      <div class="ring ring-3"></div>
+    </div>
+    <div class="loading-title">Generating your code…</div>
+    <div class="loading-status" id="loading-status">Reading visual structure</div>
+  </div>
+
+  <div class="result-card" id="result-card">
+    <div class="result-header">
+      <div class="result-title">
+        Output
+        <span class="result-badge">✓ Generated</span>
+      </div>
+      <div class="result-actions">
+        <div class="view-toggle">
+          <button class="view-btn active" id="btn-code" onclick="setView('code')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            Code
+          </button>
+          <button class="view-btn" id="btn-preview" onclick="setView('preview')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            Preview
+          </button>
+        </div>
+        <button class="btn-sm" id="copy-btn" onclick="copyCode()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy
+        </button>
+        <button class="btn-sm primary" onclick="downloadCode()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download
+        </button>
+      </div>
+    </div>
+
+    <div id="view-code">
+      <div class="code-output"><pre id="code-output"></pre></div>
+    </div>
+
+    <div id="view-preview" class="hidden">
+      <iframe id="preview-frame" class="preview-frame-full"></iframe>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-left">
+      <strong>Nettxio</strong> · Internal use only
+    </div>
+    <div class="footer-right">
+      Designed &amp; built by <span class="by">Bleon</span>
+    </div>
+  </footer>
+
+</div>
+<script>
+  let uploadedImageData = null;
+  let generatedHTML = '';
+
+  const dropZone = document.getElementById('drop-zone');
+  const fileInput = document.getElementById('file-input');
+
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  });
+
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files[0]) handleFile(fileInput.files[0]);
+  });
+
+  // Global paste support — works anywhere on the page
+  document.addEventListener('paste', e => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (const item of items) {
+      if (item.type.startsWith('image/')) {
+        const file = item.getAsFile();
+        if (file) { handleFile(file); break; }
+      }
+    }
+  });
+
+  function handleFile(file) {
+    if (!file.type.startsWith('image/')) return showError('Please upload an image file (PNG, JPG, or WebP).');
+    const reader = new FileReader();
+    reader.onload = e => {
+      uploadedImageData = e.target.result;
+      document.getElementById('preview-img').src = uploadedImageData;
+      document.getElementById('image-preview').style.display = 'block';
+      dropZone.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function resetImage() {
+    uploadedImageData = null;
+    fileInput.value = '';
+    document.getElementById('image-preview').style.display = 'none';
+    dropZone.style.display = 'block';
+  }
+
+  function showError(msg) {
+    const box = document.getElementById('error-box');
+    box.textContent = '⚠ ' + msg;
+    box.classList.add('visible');
+    setTimeout(() => box.classList.remove('visible'), 5000);
+  }
+
+  function clearError() { document.getElementById('error-box').classList.remove('visible'); }
+
+  function setView(v) {
+    ['code','preview'].forEach(name => {
+      document.getElementById('view-' + name).classList.toggle('hidden', name !== v);
+      document.getElementById('btn-' + name).classList.toggle('active', name === v);
+    });
+  }
+
+  async function generate() {
+    clearError();
+    if (!uploadedImageData) return showError('Please upload a design image first.');
+
+    const btn = document.getElementById('generate-btn');
+    const loadingCard = document.getElementById('loading-card');
+    const resultCard = document.getElementById('result-card');
+    const statusEl = document.getElementById('loading-status');
+
+    const base64 = uploadedImageData.split(',')[1];
+    const mediaType = uploadedImageData.split(';')[0].split(':')[1];
+
+    const messages = [{
+      role: 'user',
+      content: [
+        { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
+        { type: 'text', text: `You are an expert frontend developer. Carefully analyse this design screenshot and generate a pixel-faithful HTML + CSS implementation of it.
+
+Return ONLY a complete, self-contained HTML file with all CSS embedded in a <style> tag. No markdown fences, no explanation — just raw HTML starting with <!DOCTYPE html>.
+
+Requirements:
+- Match the layout, spacing, colours, and typography as closely as possible
+- Use semantic HTML5 elements
+- Use CSS flexbox and/or grid for layout
+- Include all visible text content from the design
+- Replace images with placeholders: https://placehold.co/WIDTHxHEIGHT
+- Make it responsive where appropriate
+- Add hover states and transitions where the design implies interactivity
+- Use Google Fonts if the design uses distinctive typography` }
+      ]
+    }];
+
+    btn.disabled = true;
+    loadingCard.classList.add('visible');
+    resultCard.classList.remove('visible');
+
+    const statuses = ['Reading visual structure…','Analysing layout & spacing…','Mapping colours & typography…','Writing HTML & CSS…','Polishing the output…'];
+    let si = 0;
+    const interval = setInterval(() => { si = (si + 1) % statuses.length; statusEl.textContent = statuses[si]; }, 1900);
+
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 4096, messages })
+      });
+
+      clearInterval(interval);
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error?.message || 'API error ' + response.status);
+      }
+
+      const data = await response.json();
+      let html = data.content.map(b => b.text || '').join('');
+      html = html.replace(/^```html\s*/i,'').replace(/^```\s*/i,'').replace(/\s*```\s*$/i,'').trim();
+
+      generatedHTML = html;
+      document.getElementById('code-output').textContent = html;
+      document.getElementById('preview-frame').srcdoc = html;
+
+      loadingCard.classList.remove('visible');
+      resultCard.classList.add('visible');
+
+    } catch (err) {
+      clearInterval(interval);
+      loadingCard.classList.remove('visible');
+      showError(err.message);
+    }
+
+    btn.disabled = false;
+  }
+
+  function copyCode() {
+    const btn = document.getElementById('copy-btn');
+    const succeed = () => {
+      const orig = btn.innerHTML;
+      btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+      btn.style.color = 'var(--success)';
+      btn.style.borderColor = 'var(--success)';
+      setTimeout(() => { btn.innerHTML = orig; btn.style.color = ''; btn.style.borderColor = ''; }, 2000);
+    };
+
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(generatedHTML).then(succeed).catch(() => fallbackCopy());
+    } else {
+      fallbackCopy();
+    }
+
+    function fallbackCopy() {
+      const ta = document.createElement('textarea');
+      ta.value = generatedHTML;
+      ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try { document.execCommand('copy'); succeed(); } catch(e) { alert('Copy failed — please use the Download button instead.'); }
+      document.body.removeChild(ta);
+    }
+  }
+
+  function downloadCode() {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([generatedHTML], { type: 'text/html' }));
+    a.download = 'nettxio-design.html';
+    a.click();
+  }
+</script>
+</body>
+</html>
